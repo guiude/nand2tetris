@@ -1,0 +1,71 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/01/Mux8Way16.hdl
+
+/**
+ * 8-way 16-bit multiplexor:
+ * out = a if sel == 000
+ *       b if sel == 001
+ *       etc.
+ *       h if sel == 111
+ */
+
+CHIP Mux8Way16 {
+    IN a[16], b[16], c[16], d[16],
+       e[16], f[16], g[16], h[16],
+       sel[3];
+    OUT out[16];
+
+    PARTS:
+    // Put your code here:
+
+    //Preparing the signals needed to identify each output
+    Not(in=sel[0], out=Nots0);
+    Not(in=sel[1], out=Nots1);
+    Not(in=sel[2], out=Nots2);
+    Or(a=sel[2], b=sel[1], out=s2Ors1);
+    Or(a=sel[2], b=sel[0], out=s2Ors0);
+    Or(a=sel[1], b=sel[0], out=s1Ors0);
+
+    //Signal corresponding to out=a
+    Or(a=s2Ors1, b=sel[0], out=s2Ors1Ors0);
+    Not(in=s2Ors1Ors0, out=sa);
+
+    //Signal corresponding to out=b
+    Not(in=s2Ors1, out=Nots2Ors1);
+    And(a=Nots2Ors1, b=sel[0], out=sb);
+
+    //Signal corresponding to out=c
+    Not(in=s2Ors0, out=Nots2Ors0);
+    And(a=Nots2Ors0, b=sel[1], out=sc);
+
+    //Signal corresponding to out=d
+    And(a=Nots2, b=sel[1], out=Nots2Ands1);
+    And(a=Nots2Ands1, b=sel[0], out=sd);
+
+    //Signal corresponding to out=e
+    Not(in=s1Ors0, out=Nots1Ors0);
+    And(a=sel[2], b=Nots1Ors0, out=se);
+
+    //Signal corresponding to out=f
+    And(a=sel[2], b=Nots1, out=s2AndNots1);
+    And(a=s2AndNots1, b=sel[0], out=sf);
+
+    //Signal corresponding to out=g
+    And(a=sel[2], b=sel[1], out=s2Ands1);
+    And(a=s2Ands1, b=Nots0, out=sg);
+
+    //Signal corresponding to out=h
+    And(a=s2Ands1, b=sel[0], out=sh);
+
+    //Chain of Mux16 that delivers Mux8Way16
+    Mux16(a=b, b=a, sel=sa, out=m1);
+    Mux16(a=m1, b=b, sel=sb, out=m2);
+    Mux16(a=m2, b=c, sel=sc, out=m3);
+    Mux16(a=m3, b=d, sel=sd, out=m4);
+    Mux16(a=m4, b=e, sel=se, out=m5);
+    Mux16(a=m5, b=f, sel=sf, out=m6);
+    Mux16(a=m6, b=g, sel=sg, out=m7);
+    Mux16(a=m7, b=h, sel=sh, out=out);
+}
