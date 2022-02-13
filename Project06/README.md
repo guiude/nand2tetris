@@ -1,4 +1,4 @@
-#Project 06
+# Project 06
 
 I was clearly lazy on this one. Instead of building a proper assembler, I decided to go with the "by hand" option and built the solutions on a Google Sheets.
 
